@@ -1,0 +1,82 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+```{r echo=TRUE}
+library(tidyverse)
+
+ggplot(diamonds, mapping = aes(x = cut)) + 
+  geom_bar()
+
+ggplot(diamonds, mapping = aes(x = cut)) + 
+  stat_count() #same as before
+
+ggplot(diamonds, mapping = aes(x = cut, y = ..prop.., group = 1)) + 
+  geom_bar() ##default stat changed from "count" to "prop"
+```
+
+### Statistical Transformation
+```{r echo=TRUE}
+ggplot(diamonds) + 
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )
+```
+
+## Position Adjustments
+
+```{r echo=TRUE}
+ggplot(diamonds) +
+  geom_bar(mapping = aes(x = cut, color = cut))
+
+ggplot(diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut))
+
+ggplot(diamonds) +
+  geom_bar(mapping = aes( x = cut, fill = clarity))
+```
+## Position Adjustments
+
+ In the above chart, the position is automatically set to stacking. This can be replaced with "identity", "dodge", or "fill".
+ 
+### Identity
+
+```{r echo=TRUE}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = 1/2, position = "identity")
+
+ggplot(data = diamonds, mapping = aes(x = cut, color = clarity)) +
+  geom_bar(fill = NA, position = "identity")
+```
+### Fill
+
+```{r echo=TRUE}
+ggplot(diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "fill")
+```
+
+### Dodge
+
+```{r echo=TRUE}
+ggplot(diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge")
+```
+
+### Jitter
+
+```{r echo=TRUE}
+ggplot(mpg, mapping = aes(x = displ, y = hwy))+
+  geom_point(position = "jitter")
+```
+
+__for help, ?position_dodge, ?position_fill, ?position_identity, ?position_jitter, ?position_stack.__
+
+
+
