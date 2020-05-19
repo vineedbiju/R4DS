@@ -1,10 +1,5 @@
 ---
-title: "R Notebook"
-output:
-  html_document:
-    df_print: paged
-editor_options:
-  chunk_output_type: inline
+title: "Visualizations with ggplot2 - Part 4" 
 ---
 ```{r echo=TRUE}
 library(tidyverse)
@@ -17,6 +12,10 @@ ggplot(diamonds, mapping = aes(x = cut)) +
 
 ggplot(diamonds, mapping = aes(x = cut, y = ..prop.., group = 1)) + 
   geom_bar() ##default stat changed from "count" to "prop"
+
+
+ggplot(mpg, aes(x = class, y = hwy,  fill = class)) +
+  geom_boxplot(alpha = 0.2, color = "black")
 ```
 
 ### Statistical Transformation
@@ -28,6 +27,28 @@ ggplot(diamonds) +
     fun.max = max,
     fun = median
   )
+
+demo <- tribble(
+  ~a,~b,
+  "1", 20,
+  "2" , 15,
+  "3", 45
+)
+
+ggplot(demo, mapping = aes(x = a, y = b)) +
+  geom_bar(stat = "identity")
+
+ggplot(diamonds ) +
+  geom_bar(aes(x = cut, fill = clarity))
+
+ggplot(diamonds, aes(x = cut, y = depth)) +
+  stat_summary(
+    fun.ymin = min,
+    fun.ymax = max,
+    fun = median
+  )
+
+
 ```
 
 ## Position Adjustments
