@@ -1,0 +1,77 @@
+---
+title: "Data Transformation using dplyr, Part 1"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+```
+
+### Filter Rows with filter()
+
+* Alt + (left arrow) for <-
+
+```{r}
+# Pick observations by their values - filter(data frame, what to do with the dataframe, using variables) --> results in another data.frame
+jan1 <- filter(flights, month == 1, day == 1) #results in a dataframe with Jan 1st as date
+
+(dec25 <- filter(flights, month == 12, day ==25)) #to display results, wrap in paranthesis
+
+#comparison operators are < , <= , > , >= , == , !=
+
+near(sqrt(2)^2, 2)# instead of sqrt(2)^2 == 2
+
+#Boolean operators : & is 'and', | is 'or' and ! is 'not'
+
+nov_dec <- filter(flights, month %in% c(11,12)) #instead of month == 11|12
+#nov_dec <-  filter(flights, month ==11 | month == 12) #both evaluate to the same
+
+#Finding flights not delayed more than 2 hours in arrival/departure
+filter(flights, !(arr_delay >120 | dep_delay >120))
+#applying Demorgan's Rule
+filter(flights, !arr_delay >120 & !dep_delay >120) 
+
+#filter() by default discards NA values. 
+
+df <- tibble(x = c(1,NA, 3))
+filter(df, x >1)
+filter(df, is.na(x)|x>1)
+```
+
+### Exercises
+1
+```{r}
+#a
+filter(flights, arr_delay >=120)
+#b
+filter(flights, dest %in% c("IAH", "HOU"))
+#c
+filter(flights, carrier %in% c('UA', 'AA' , 'DL'))
+#d
+filter(flights, month %in% c(7,8,9))
+#e
+filter(flights, arr_delay > 120, dep_delay <=0)
+#f
+filter(flights, dep_delay > 60, arr_delay < dep_delay - 30)
+#g
+filter(flights, (dep_time >2200 | dep_time <600) )
+```
+
+2
+```{r}
+filter(flights, !between(dep_time,600,2200))
+```
+
+3
+```{r}
+nrow(filter(flights, is.na(dep_time)))
+filter(flights, is.na(dep_time))
+
+```
+

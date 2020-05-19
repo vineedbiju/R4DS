@@ -1,0 +1,52 @@
+---
+title: "Data Transformation using dplyr, Part 2"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+editor_options:
+  chunk_output_type: inline
+---
+
+## Arrange rows with arrange()
+> be default is in ascending order. Use desc() for descending order. 
+> Missing values are always sorted at the end.
+```{r}
+library(nycflights13)
+library(tidyverse)
+
+flights
+
+arrange(flights,year, month, day) #each succeeding column is used to break ties between the same column values)
+
+arrange(flights, desc(arr_delay))
+
+```
+## Exercises
+
+### 1 NEED BETTER SOLUTION
+```{r}
+
+arrange(flights, desc(is.na(dep_time), dep_time))
+
+```
+### 2 NEED BETTER SOLUTION
+```{r}
+
+arrange(flights, desc(arr_delay), dep_time)
+
+```
+
+3
+
+```{r}
+arrange(flights, distance/air_time)
+
+```
+4
+```{r}
+arrange(flights, desc(distance)) #fastest
+arrange(flights, distance)
+```
+
+ 

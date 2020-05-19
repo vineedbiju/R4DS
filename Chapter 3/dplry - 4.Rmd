@@ -1,0 +1,95 @@
+---
+title: "Transformation with dplyr, Part 4"
+author: "Vineed"
+date: "5/18/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Add new varibles with mutate()
+  + adds new column at the end of the dataset
+
+```{r}
+
+library(tidyverse)
+flights_sml <- select(flights,
+                      year:day, ends_with("delay"),
+                      distance,
+                      air_time)
+
+mutate(flights_sml, 
+       gain = arr_delay - dep_delay,
+       speed = distance / (air_time / 60)
+       )
+
+mutate(flights_sml, gain = arr_delay - dep_delay,
+       hours = air_time/60,
+       gain_per_hour = gain/hours
+       )
+```
+
+> if we only need the new values, use transmute() instead of mutate()
+
+```{r}
+transmute(flights,gain = arr_delay - dep_delay,
+       hours = air_time/60,
+       gain_per_hour = gain/hours
+       )
+```
+
+### Useful Creation Functions
+
+  + Arithmetic OPerators
+  + Modular Arithmetic (%/% - integer division and %% - remainder)
+  + Logs - log(), log2(), log10()
+  + Offsets - lead(), lag()
+  + cumulative aggregates - cummean(), cumsum(), cumprod(), cummin(), cummax()
+  + logical comparisons - >,<, <=, >=, ==, !=
+  + ranking - min_rank(), percent_rank(), row_number(), cume_dist(),dense_rank()
+
+```{r}
+transmute(flights, hours = dep_time %/% 100,
+          minutes = dep_time %% 100)
+```
+
+## Exercises
+1
+```{r}
+mutate(flights, 
+       dep_minutes = dep_time %/%100 * 60 + dep_time%%100,
+       sched_dep_minutes = sched_dep_time %/%100 * 60 + sched_dep_time%%100
+       
+       )
+```
+2
+```{r}
+
+new_data <- transmute(flights, air_time, 
+          arr_minute = (arr_time %/% 100 * 60 + arr_time%%100) %% 1440 , 
+          dep_minute = (dep_time %/% 100 * 60 + dep_time%%100) %% 1440, 
+          arr_minute - dep_minute)
+
+transmute()
+
+arrange(filter(new_data, arr_minute < dep_minute ), desc(dep_minute))
+
+
+```
+3
+```{r}
+transmute( dep_time, sched_dep_time, dep_delay)
+ggplot(flights)+
+  geom_bar(aes(x = dep_time))
+
+```
+4.
+```{r}
+mutate(flights, min_rank(sched_arr_time - arr_time))
+
+```
+
