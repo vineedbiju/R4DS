@@ -1,0 +1,81 @@
+---
+title: "Relational Data with dplyr"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+
+airlines
+airports
+planes
+weather
+
+#verify if they are unique keys
+planes %>% count(tailnum) %>% 
+  filter(n >1)
+
+#not unique
+weather %>% count(year, month, day, hour, origin) %>% 
+  filter(n>1)
+
+
+#make unique with row_number() - surrogate key
+weather %>% group_by(year,month,day,hour,origin) %>% mutate(rank = row_number()) %>% 
+  count(year, month, day, hour, origin,rank) %>% 
+  filter(n>1)
+
+```
+## Exercises
+
+#1
+```{r}
+
+View(flights)
+flights  %>% mutate(plane_no= row_number()) %>% 
+  count(plane_no) %>% 
+  filter(n>1)
+
+#what does row_number do
+x <- c(1,5,2,3,10,11,8,5)
+row_number(x)
+
+flights %>% mutate(plane_id = row_number()) %>% 
+  glimpse()
+
+```
+#2
+```{r}
+Lahman::Batting
+Lahman::Batting %>% count(playerID,yearID,stint) %>% 
+  filter(n>1)
+
+babynames::babynames
+babynames::babynames %>% count(year,sex,name) %>% filter(n>1)
+
+nasaweather::atmos %>% count(lat,long,year,month) %>% filter(n>1)
+
+fueleconomy::vehicles
+fueleconomy::vehicles %>% count(id,make) %>% filter(n>1)
+
+diamonds
+diamonds %>% count(cut,color,clarity) %>% filter(n>1) #no primary keys
+
+diamonds %>% mutate(diamonds_id = row_number()) %>% glimpse
+
+diamonds %>% distinct() %>% nrow()
+diamonds %>% nrow() #since both not same, there will be duplicate rows
+
+
+
+
+```
+## Mutating joins
+
+```{r}
+
+```
+

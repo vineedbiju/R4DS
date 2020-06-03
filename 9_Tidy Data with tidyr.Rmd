@@ -1,0 +1,279 @@
+---
+title: "Tidy Data with tidyr"
+author: "Vineed"
+date: "6/2/2020"
+output: html_document
+---
+
+### Introduction 
+```{r}
+library(tidyverse)
+
+table1 %>% mutate(
+  rate = cases/population*10000
+)
+
+#compute total cases per year and rate per year
+
+table1 %>% group_by(year) %>% summarise(total_cases = sum(cases), total_population = sum(population),
+                                        rate = total_cases/total_population)
+
+#total cases
+table1 %>% count(year, wt=cases)
+
+#visualizing the data
+table1 %>% ggplot(aes(x = year, y = cases))+
+  geom_line(aes(group = country, color = country))+
+  geom_point(aes(color = country))
+
+
+```
+### Exercises
+
+```{r}
+
+#Rate from Table 2
+t2_cases <- table2 %>% filter(type == "cases") %>%
+  rename(cases = count)
+t2_population <- table2 %>% filter(type =="population") %>% 
+  rename(population = count)
+
+req_table <- tibble(
+  country = t2_cases$country,
+  year = t2_cases$year,
+  cases = t2_cases$cases,
+  population = t2_population$population
+) %>% arrange(country,year)
+ 
+req_table %>% mutate(rate = cases/population*1000) 
+
+table4a
+table4b
+
+tibble(
+  country = table4a$country,
+  year = 1999,
+  cases = table4a$'1999',
+  population = table4b$'1999'
+)
+
+#3
+table2 %>% filter(type =="cases") %>% 
+  ggplot(aes(year, count))+
+  geom_line(aes(group = country))+
+  geom_point(aes(color = country))
+```
+
+## Spreading and Gathering
+
+```{r}
+table4a %>% gather("1999","2000", key = "year", value = "cases") %>% 
+  arrange(country, year)
+
+table4b %>% gather("1999","2000",key = "year", value = "population") %>% 
+  arrange(country,year)
+
+#to combine, left join needs to be used - more in chapter 10
+
+tidy4a <- table4a %>% gather("1999","2000", key = "year", value = "case")
+tidy4b <- table4b %>% gather("1999", "2000", key = "year", value = "population")
+left_join(tidy4a,tidy4b)
+```
+### Gathering
+
+```{r}
+table2
+spread(table2, key =type, value = count)
+
+```
+### Exercises
+
+#1
+```{r}
+stocks <- tibble(
+  year = c(2015, 2015, 2016, 2016),
+  half = c(1,2,1,2),
+  return = c(1.88, 0.59, 0.92, 0.17)
+)
+stocks
+stocks %>% spread(year, return) %>% 
+  gather("year","return", '2015','2016', convert = T) #if convert not used, then the year will be character. 
+```
+#2
+```{r}
+table4a %>% gather("1999", "2000", key = "year", value = "cases")
+
+```
+#3
+```{r}
+people <- tribble(
+  ~name,~key,~value,
+  "Philip","age",45,
+  "Philip","height",186,
+  "Philip", "age",50,
+  "Jessica", "age", 37,
+  "Jessica", "height", 156
+)
+
+#people %>% spread(key, value)
+
+people2 <- people %>% group_by(name,key) %>% mutate(obs= row_number())
+
+people2 %>% spread(key,value)
+
+```
+#4
+```{r}
+(preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes",NA, 10,
+  "no",20,12
+))
+
+preg %>% gather(male,female, key = gender, value = infected) %>% 
+  select(gender, everything()) 
+```
+
+### Seperating and Pull
+
+```{r}
+table3 %>% separate(rate, into = c("cases", "population")) #splits non-alphanumeric character
+
+table3 %>% separate(rate, into = c("cases", "population"), sep = "/") #explicit mention of charater for splitting
+
+table3 %>%  separate(rate, into = c("cases", "population"), convert = T) #convert to required type
+
+#passing arguments will split at the location (+ve from far left, -ve from far right)
+
+table5 <- table3 %>% separate(year, into = c("millenium","century", "year"), sep = c(1,2))
+
+```
+
+#### Unite
+
+```{r}
+unite(table5, year, "millenium", century, year)
+#for no arguments between joined variables :-
+unite(table5, year,"millenium", century, year, sep = "")
+
+```
+### Exercises
+
+#1
+```{r}
+tibble(x = c("a,b,c","d,e,f,g","h,i,j")) %>% 
+  separate(x, c("one", "two","three"))
+
+tibble(x = c("a,b,c","d,e,f,g","h,i,j")) %>% 
+  separate(x, c("one", "two","three"), extra = "drop")
+
+tibble(x = c("a,b,c","d,e,f,g","h,i,j")) %>% 
+  separate(x, c("one", "two","three"), extra = "merge")
+
+#fill
+
+tibble(x = c("a,b,c","d,e","h,i,j")) %>% 
+  separate(x, c("one", "two","three"))
+
+tibble(x = c("a,b,c","d,e","h,i,j")) %>% 
+  separate(x, c("one", "two","three"), fill = "left")
+
+tibble(x = c("a,b,c","d,e","h,i,j")) %>% 
+  separate(x, c("one", "two","three"), fill = "right")
+
+
+```
+
+#2
+```{r}
+
+#Separate by separator
+tibble(x = c("X_1", "X_2", "AA_1", "AA_2")) %>%
+  separate(x, c("variable", "into"), sep = "_")
+
+#Separate by location/position
+tibble(x = c("X1", "X2", "Y1", "Y2")) %>%
+  separate(x, c("variable", "into"), sep = c(1))
+
+#Separate by group(regex)
+tibble(x = c("X_1", "X_2", "AA_1", "AA_2")) %>%
+  extract(x, c("variable", "id"), regex = "([A-Z])_([0-9])")
+
+tibble(x = c("X1", "X2", "Y1", "Y2")) %>%
+  extract(x, c("variable", "id"), regex = "([A-Z])([0-9])")
+
+tibble(x = c("XXXX1", "X20", "YA1", "YA20")) %>%
+  extract(x, c("variable", "id"), regex = "([A-Z]+)([0-9]+)")
+```
+
+### Missing Values
+
+```{r}
+stocks <- tibble(
+  year = c(2015,2015,2015,2015,2016,2016,2016),
+  qtr = c(1,2,3,4,2,3,4),
+  return = c(1.88, 0.59, 0.35, NA,0.92, 0.17, 2.66)
+)
+
+stocks %>% spread(year, return)
+
+stocks %>% spread(year, return) %>% 
+  gather('2015','2016', key = year, value = return)
+
+stocks %>% complete(year, qtr) #Complete takes out all combination of the parameters and bring out implicit missing notes
+
+treatment <- tribble(
+  ~person, ~treatment, ~response,
+  "Derrick Whitmore", 1, 7,
+  NA,2,10,
+  NA,3,9,
+  "Katherine Burke", 1, 4
+)
+
+treatment %>% fill(person)
+treatment %>% fill(person, .direction = "up")
+
+
+
+```
+
+## Case Study
+
+```{r}
+View(tidyr::who)
+
+who1 <- tidyr::who %>% gather(
+  5:60, key = "key", value = "cases", na.rm = T
+)
+
+n_distinct(who1$key)
+
+who2 <- who1 %>% 
+  mutate(key = stringr::str_replace(key,"newrel", "new_rel"))
+
+View(who2)
+
+who3 <- who2 %>% separate(key, c("new","type","sexage"), sep = "_")
+
+n_distinct(who3$new)
+
+who4 <- who3 %>% select(-new, -iso2, -iso3)
+
+who5 <- who4 %>% separate(sexage, c("sex", "age"), sep = 1)
+
+n_distinct(who5$age)
+
+#replacing with a complex pipe :-
+
+who %>% gather(5:60, key = "code", value = "cases", na.rm = T) %>% 
+  mutate(code= stringr::str_replace(code,"newrel","new_rel")) %>% 
+  separate(code, c("new","type","sexage"), sep ="_") %>% 
+  separate(sexage, c("sex", "age"), sep = 1) %>% 
+  select(-iso2,-iso3,-new)
+
+
+select(who3, country,iso2, iso3) %>% 
+  distinct() %>% 
+  group_by(country) %>% 
+  filter(n()>1)
+             

@@ -1,0 +1,112 @@
+---
+title: "Tibbles with tibble, Part 1"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+library(tidyverse)
+
+as_tibble(iris) #coercing a dataframe as a tibble
+tibble(
+  a = 1:5,
+  b =2+a,
+  c = 1, #can recycle inputs of length 1
+  d = a^1.5+b
+)
+
+tb <- tibble(
+  `:)` = "a smiley",
+  ` ` = "a plain space",
+  `2000` = " a number"
+)
+tb
+
+
+tb$`:)` #the back ticks needs to be present for referencing the columns later on
+
+tribble(
+  ~a,~b,~c,
+ 
+  "a",2,3.6,
+  "b", 4, 1.2
+)
+
+#Tibbles print only the first 10 ns and Width that can be observed in the console
+
+nycflights13::flights
+nycflights13::flights %>% print(
+  n = 15, width = Inf
+) #here the output in the console will be what's required
+
+#the default option can be changed. use package?tibble to know more
+
+nycflights13::flights %>% View()
+```
+
+### Subsetting
+```{r}
+df <- tibble(
+  x = runif(5),
+  y = rnorm(5)
+)
+
+#Extract by name
+df$x
+df[["x"]]
+
+#extract by position
+df[1]
+df[[1]]
+
+
+class(as.data.frame(df))
+
+
+```
+## Exercises
+
+1
+```{r}
+class(mtcars)
+
+```
+2
+```{r}
+
+ds <- data.frame(abc = 1, xyz = "a")
+ds$x
+ds[,"xyz"]
+ds[,c("abc", "xyz")]
+
+tb <- as_tibble(ds)
+tb$x
+tb[,"xyz"]
+tb[,c("abc","xyz")]
+
+```
+3
+```{r}
+vars <- "xyz"
+
+tb %>% select(one_of(vars))
+```
+
+4
+```{r}
+tb <- tibble(
+  `1` = runif(100),
+  `2` = rnorm(100)
+  )
+
+tb$`1`
+
+tb %>% ggplot(aes(`1`,`2`))+
+  geom_point()
+
+
+
+```
+
+

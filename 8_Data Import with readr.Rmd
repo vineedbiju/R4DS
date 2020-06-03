@@ -1,0 +1,154 @@
+---
+title: "Data Import with readr"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+#read_csv() - comma separated
+#read_csv2() - semicolon seperated
+#read_tsv() - tab delimited
+#read_demin() - any delimiter
+
+heights <- read_csv("heights.csv") #- relational path or absolute path
+
+read_csv("a,b,c #default mode reads the first line as the variable name
+         1,2,3
+         5,2,1
+         21.1,56,2")
+
+read_csv("this line is meta
+         this line too is meta
+         a,bg,d
+         1,2,3
+         2,5,98", skip = 2) #skip 2 lines
+
+read_csv("#a comment i want to skip
+         a,b,r
+         1,2,3", comment = "#")
+
+read_csv("1,2,3\n4,3,2", col_names = F)
+
+read_csv("1,2,3
+         2,3,4", col_names = c("a","v","z"))
+
+read_csv("1,23,5
+         2,3,.", na=".", col_names = F)
+```
+
+## Exercises
+```{r}
+(tb <- read_delim("a|b|c\n1|2|3\n4|4|5", "|", col_names = T))
+```
+
+
+5
+```{r}
+read_csv("a,b,c\n1,2,3\n4,5,6")
+read_csv("a,b,c\n1,2\n1,2,3,4")
+read_csv("a,b\n\"1")
+read_csv("a,b\n1,2\na,b")
+read_csv2("a;b\n1;3")
+```
+## Parsing a Vector
+
+
+```{r}
+str(parse_logical(c("TRUE","False", "NA")))
+
+str(parse_integer(c("1","2","3")))
+
+str(parse_date(c("2010-01-01","1979-10-11")))
+
+parse_integer(c("1","2",".","65"), na = ".")
+
+#Errors
+x <- parse_integer(c("123","234","asd", "123.23"))
+
+#if a lot of issues, use problems()
+
+problems(x)
+
+# parse_integer, parse_double, parse_number(),
+#parse_character(), parse_logical()
+#parse_factor(), parse_date()
+
+```
+### Numbers
+```{r}
+parse_double("123.32")
+parse_double("123,23", locale = locale(decimal_mark = ","))
+
+#to address currency symbols and percentages : - 
+parse_number("$123.23")
+parse_number("89%")
+parse_number("The thing costs $123.89 ")
+
+parse_number("$123,345,789")
+parse_number("123.765.234", locale = locale(grouping_mark = ".", decimal_mark = ","))
+
+```
+
+### Strings
+
+```{r}
+charToRaw("Vineed") #Hexa Digits
+
+x1 <- "El Ni\xf1o was particularly bad this year"
+guess_encoding(charToRaw(x1))
+
+x2 <- "文字化け"
+
+guess_encoding(charToRaw(x2))
+```
+### Factors
+
+```{r}
+fruit <- c("apple", "banana")
+parse_factor(c("apple", "banana", "bananana"), levels = fruit)
+```
+
+### Dates, Date-Times, and Times
+
+```{r}
+parse_datetime("2010-10-01T2010")
+parse_datetime("20101010")
+
+parse_date("2010/10/10")
+parse_date("2010-10-10")
+
+parse_time("01:10 am")
+parse_time("20:10:01")
+parse_time("08:12 PM")
+
+#we can give our own formats in parse_time 
+parse_date("01/02/15","%m/%d/%y")
+parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr")) #more details in the documentation
+
+```
+
+##Exercise
+2
+```{r}
+parse_number("123.143,13", locale = locale(decimal_mark = ",", grouping_mark = "."))
+```
+3
+```{r}
+ind_locale <- locale(date_format = "%d/%m/%Y", tz = "GMT")
+parse_datetime("01/02/1992T09:11:12", locale = ind_locale)
+```
+
+### Parsing a file
+
+```{r}
+
+```
+
+
+
+
+
+
+ 
