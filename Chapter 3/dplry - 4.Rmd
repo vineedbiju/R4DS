@@ -4,7 +4,7 @@ author: "Vineed"
 date: "5/18/2020"
 output: html_document
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -17,6 +17,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 
 library(tidyverse)
+
+#why pipe operator used is shown below
 flights_sml <- select(flights,
                       year:day, ends_with("delay"),
                       distance,
@@ -90,6 +92,22 @@ ggplot(flights)+
 4.
 ```{r}
 mutate(flights, min_rank(sched_arr_time - arr_time))
+
+```
+
+```{r}
+
+(vec <- sample(c(1:6, 2:3, 3:9)))#completely random set of numbers
+
+tibble(vec,
+        min_rank(vec),
+       dense_rank(vec), 
+       percent_rank(vec),
+       row_number(vec),
+       cume_dist(vec)
+       ) %>% 
+  arrange(vec)
+
 
 ```
 

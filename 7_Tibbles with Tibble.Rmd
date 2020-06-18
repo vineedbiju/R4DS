@@ -1,23 +1,25 @@
 ---
-title: "Tibbles with tibble, Part 1"
+title: "Tibbles with tibble"
 output: html_notebook
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r}
 library(tidyverse)
 
-as_tibble(iris) #coercing a dataframe as a tibble
+as_tibble(iris) #coercing a data frame as a tibble
+abc = 1:5
+
 tibble(
-  a = 1:5,
+  a =abc,
   b =2+a,
   c = 1, #can recycle inputs of length 1
   d = a^1.5+b
 )
 
 tb <- tibble(
-  `:)` = "a smiley",
+  `:)` = c("a smiley","another one"),
   ` ` = "a plain space",
   `2000` = " a number"
 )
@@ -33,12 +35,10 @@ tribble(
   "b", 4, 1.2
 )
 
-#Tibbles print only the first 10 ns and Width that can be observed in the console
+#Tibbles print only the first 10 rows and Width that can be observed in the console
 
 nycflights13::flights
-nycflights13::flights %>% print(
-  n = 15, width = Inf
-) #here the output in the console will be what's required
+nycflights13::flights %>% print(n = 15, width = Inf) #here the output in the console will be what's required
 
 #the default option can be changed. use package?tibble to know more
 
@@ -53,12 +53,12 @@ df <- tibble(
 )
 
 #Extract by name
-df$x
-df[["x"]]
+df$x #a vector
+df[["x"]] #a vector
 
 #extract by position
-df[1]
-df[[1]]
+df[1] #a tibble
+df[[1]] #a vector
 
 
 class(as.data.frame(df))
@@ -110,3 +110,4 @@ tb %>% ggplot(aes(`1`,`2`))+
 ```
 
 
+ 

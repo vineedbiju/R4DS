@@ -1,0 +1,655 @@
+---
+title: "Strings with stringr"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+library(stringr)
+
+string1 <- "This is a string"
+string2 <- 'To put a "quote" inside a string, use single quotes'
+
+double_quote <- "\""
+single_quote <- '\''
+
+writeLines(double_quote)
+writeLines(single_quote)
+
+str_length(c("Hi", "This is a character building time", NA)) #for string length
+
+(str_c("Hi,", "\nStay Strong", "\nGod has plans for me ")) #concatination of strings. writeLines for the strings 
+
+str_c("x","y", sep = ",")
+
+x <- c("abc", "xyz")
+str_c("|-", x, "-|") #will be two character strings
+
+y <- c("abc", NA)
+str_c("|-", y, "-|")
+str_c("|-", str_replace_na(y), "-|")
+
+str_c("prefix-", c("a", "b", "c"), "-suffix")
+
+#objects of length 0 are silently droppped, particularly useful when used with if
+
+name <- "Vineed"
+time_of_day <- "morning"
+birthday <- FALSE
+
+str_c(
+  "Good ", time_of_day," ", name,
+  if(birthday)" and Happy Birthday",
+  "."
+)
+
+
+str_c(c("x", "y", "z"), collapse = ",") #learn mixing collapse and sep
+
+
+```
+## Subsetting Strings
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x,1,3)
+str_sub(x, -3, -1)
+
+str_sub(x, 4,9)  #no error if string too short. Will return whatever it can
+
+
+str_sub(x, 1,1) <- str_to_lower(str_sub(x,1,1)) #can use assignment form
+x
+```
+
+## Exercises
+
+3
+```{r}
+#figure out
+
+```
+
+4
+```{r}
+#str_trim removes white spaces from both sides, side = "left"/"right' can be set
+
+#str_pad can be used to add white spaces
+
+```
+
+# Matching Patters with Regular Expressions
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "an")
+
+str_view(x, ".a.") #any character but not new line
+
+str_view(x, "^a") #where a is starting
+str_view(x, "a$") #where a is ending
+
+str_view(x, "^apple$") #to match a complete string
+
+
+```
+
+#Exercises
+
+1
+```{r}
+a <- c("$^$")
+str_view(a, "\\$\\^\\$")
+
+```
+2
+```{r}
+str_view(stringr::words, "^y", match = T) #match = T shows only matched numbers
+str_view(stringr::words, "x$", match = T)
+
+str_view(stringr::words, "^...$", match = T)
+
+str_view(stringr::words, ".......", match = T)
+
+```
+
+## Character Classes and Alternatives
+
+\d matches any digit
+\s matches any white space(space, tab, newline)
+[abc] matches a, b or c
+[^abc] matches anything except a, b or c
+```{r}
+str_view(c("grey", "gray"), "gr(e|a)y")
+```
+ 
+Exercises
+
+1
+```{r}
+str_view(stringr::words, "^[aeiou]", match = T)
+str_view(stringr::words, "^[^aeiou]+$", match = T) #explained later
+
+str_view(stringr::words, "[^e]ed$", match = T)
+str_view(stringr::words, "i(ng|ze)", match = T)
+
+
+```
+2
+```{r}
+#find answer
+```
+3
+```{r}
+#get list of all words with q not followed by u
+```
+5
+```{r}
+phone <- c("+919633893313", "+919496450142", "+919400106015")
+str_view(phone, "^+91..........$")
+```
+Repetition
+
+```{r}
+x <- "1888 is the longest year in Roman Numberals: MDCCCLXXXVIII"
+str_view(x, "CC?") #matches only 0 or 1
+str_view(x, "CC+") #matches 1 or more
+str_view(x, "C[LX]+")
+
+str_view(x, "C{2}") #exactly 2
+str_view(x, "C{2,3}") #between 2 to 3
+str_view(x, "C{2,}") #2 or more
+str_view(x, "C{2,3}?")
+
+```
+
+Exercise solutions to be added here
+
+
+## Grouping and Back References
+```{r}
+str_view(fruit, "(..)\\1", match = T)
+```
+
+
+Exercises
+1
+```{r}
+str_view(fruit, "(.)(.)\\2\\1", match = T)
+
+str_view(fruit, "(.)\\1\\1", match = T)
+
+str_view(fruit, "(.)(.)\\2\\1", match = T)
+
+str_view(fruit, "(..)\\1", match = T)
+
+str_view(fruit, "(.).\\1.\\1", match= T)
+```
+2
+```{r}
+str_view(stringr::words, "^(.).*\\1$", match = T)
+str_view(stringr::words, "(..).*\\1", match = T)
+str_view(stringr::words, "(.).*\\1.*\\1", match = T)
+```
+
+
+## Tools
+```{r}
+#Detect Matches
+x <- c("apple", "banana", "pear")
+str_detect(x, "e") 
+
+#how many words start with t in stringr::words
+sum(str_detect(words, "^t"))
+
+#what proportion of words end with a consonent
+mean(str_detect(words, "[^aeiou]$"))
+
+#select words that match a pattern
+words[str_detect(words, "x$")]
+
+str_subset(words, "x$")
+
+#for tibbles
+df <- tibble(
+  word = words,
+  i = seq_along(word)
+)
+
+df %>% filter(str_detect(word, "x$"))
+
+str_count(x, "a")
+
+#how many vowels per word
+mean(str_count(x, "[aeiou]"))
+```
+ 
+
+Exercises
+
+1
+```{r}
+words[str_detect(words,"^a|a$")]
+str_subset(words, "^x|x$")
+
+words[str_detect(words, "^[aeiou].*[^aeiou]$")]
+
+vowel_no <- str_count(words, "[aeiou]")
+words[which(vowel_no==max(vowel_no))]
+
+vowel_prop <- str_count(words, "[aeiou]")/str_length(words)
+words[which(vowel_prop==max(vowel_prop))]
+```
+
+## Extract Matches
+
+```{r}
+sentences
+
+colors <- c(
+  "red", "orange", 'yellow', "green", "blue", "purple"
+)
+color_match <- str_c(colors, collapse = "|")
+
+has_color <- str_subset(sentences, color_match) #bring out sentences with colors
+matches <- str_extract(has_color, color_match) #extracts just the color
+head(matches)
+
+more <- sentences[str_count(sentences, color_match)>1] #subsets all lines with more than 1 color
+str_view_all(more, color_match)
+
+str_extract_all(more, color_match) #returns a list
+
+str_extract_all(more, color_match, simplify = T) #returns a matrix
+
+```
+
+Exercises
+1
+```{r}
+colors <- c("red", "green", "orange", "yellow", "blue", "purple")
+color_match <- str_c("\\b(",str_c(colors,collapse = "|"),")\\b")
+
+
+(has_color <- str_subset(sentences, color_match))
+more <- sentences[str_count(sentences, color_match)>1]
+str_view_all(more, color_match)
+```
+2
+```{r}
+str_extract(sentences, "[A-Za-z][A-Za-z']*")
+as_tibble( str_extract(sentences,"[A-Za-z]+ing")) %>% 
+  filter(!is.na(value))
+
+```
+Grouped Matches
+
+```{r}
+noun <- "(a|the) ([^ ]+)"
+
+(has_noun <- sentences %>% str_subset(noun))
+has_noun %>% str_extract(noun)
+
+has_noun %>% str_match(noun)
+
+tibble(sentence = sentences) %>% 
+  tidyr::extract(
+    sentence, c("article", "noun"), "(a|the) ([^ ]+)",
+    remove = F
+  )
+```
+
+Exercises
+
+1
+```{r}
+req_form <- "\\b(one|two|three|four|five|six|seven|eight|nine) ([^ ]+)"
+
+all_sent <- str_subset(sentences, req_form)
+all_sent %>% str_match(req_form)
+
+tibble(all_sent) %>% 
+  extract(
+    all_sent, c("number", "word"), req_form, remove = F
+  )
+
+```
+2
+```{r}
+req_form <- "(\\b[A-Za-z]*'[A-Za-z]*\\b)"
+str_subset(sentences, req_form) %>% str_extract(req_form) %>% 
+  str_split("'", simplify = T)
+```
+
+Replacing Matches
+```{r}
+str_replace(x, "[aeiou]", "-")
+str_replace_all(x,"[aeiou]", "-")
+y <- c("1 house", "2 cars", "3 wifes")
+str_replace_all(y, c("1" = "One", "2" = "Two", "3" = "Three" ))
+
+sentences %>% str_replace("([^ ]+) ([^ ]+) ([^ ]+)", "\\1 \\3 \\2") %>% 
+  head(5)
+
+```
+
+Exercise
+
+1
+```{r}
+qaz <- str_c("/n","/t","/t","/n", "there", sep = "hi")
+writeLines(str_replace_all(qaz, c("/" = "\\\\")))
+```
+2
+```{r}
+swapped <- str_replace(words, "(^[A-Za-z])(.*)([A-Za-z]$)","\\3\\2\\1")
+
+intersect(swapped, words)
+```
+
+Splitting
+
+```{r}
+sentences %>% str_split(" ") %>% head(5)
+
+"a|b|c|d" %>% str_split("\\|") %>% .[[1]]
+
+sentences %>% head(10) %>% str_split(" ", simplify = T)
+
+#we can split by character, line, sentence and word boundary()
+
+x <- "this is a sentence. this is another sentence"
+str_view_all(x, boundary("word"))
+
+str_split(x, " ")
+str_split(x, boundary("word"))
+```
+
+
+Exercises
+Need to work
+
+
+Other Types of Pattern
+
+```{r}
+str_view(fruit, "nana", match = T)
+str_view(fruit, regex("nana"), match = T)
+
+bananas <- c("banana", "Banana", "BANANA")
+str_view(bananas, regex("bana", ignore_case = T)) #ignore Case
+
+line <- c("Line 1\nLine 2\nLine 3")
+str_extract_all(line, regex("^Line", multiline = T)) #multiline
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

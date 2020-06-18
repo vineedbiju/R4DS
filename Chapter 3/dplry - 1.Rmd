@@ -5,7 +5,7 @@ output:
   html_document:
     df_print: paged
 editor_options:
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -15,11 +15,11 @@ library(tidyverse)
 
 ### Filter Rows with filter()
 
-* Alt + (left arrow) for <-
+* Alt + (minus) for <-
 
 ```{r}
-# Pick observations by their values - filter(data frame, what to do with the dataframe, using variables) --> results in another data.frame
-jan1 <- filter(flights, month == 1, day == 1) #results in a dataframe with Jan 1st as date
+# Pick observations by their values - filter(data frame, what to do with the data frame, using variables) --> results in another data.frame
+jan1 <- filter(flights, month == 1, day == 1) #results in a data frame with Jan 1st as date
 
 (dec25 <- filter(flights, month == 12, day ==25)) #to display results, wrap in paranthesis
 
@@ -35,7 +35,8 @@ nov_dec <- filter(flights, month %in% c(11,12)) #instead of month == 11|12
 #Finding flights not delayed more than 2 hours in arrival/departure
 filter(flights, !(arr_delay >120 | dep_delay >120))
 #applying Demorgan's Rule
-filter(flights, !arr_delay >120 & !dep_delay >120) 
+filter(flights, !arr_delay >120 & !dep_delay >120)
+
 
 #filter() by default discards NA values. 
 

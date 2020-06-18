@@ -5,7 +5,7 @@ output:
     df_print: paged
   pdf_document: default
 editor_options:
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ## Arrange rows with arrange()

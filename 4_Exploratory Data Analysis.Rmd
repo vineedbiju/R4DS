@@ -1,0 +1,130 @@
+---
+title: "Exploratory Data Analysis"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+#two questions to start asking
+  * what type of variation occurs within my variables - bar, freqpoly, histogram
+  * what type of covariation occurs between my variables
+
+```{r}
+library(tidyverse)
+
+#For categorical variable, use a bar graph
+
+ggplot(diamonds, aes(x = cut))+
+  geom_bar()
+
+diamonds %>% count(cut)
+
+#for continuous variable, histogram or freqpoly
+
+ggplot(diamonds, aes(x = carat))+
+  geom_histogram(binwidth = .5)
+
+ggplot(diamonds, aes(x = carat))+
+  geom_histogram(bins = 1000)
+#are there subgroups in the data? 
+#Why are the clusters similar? WHy are they dissimilar?
+
+diamonds %>% count(cut_width(carat,0.5))
+
+ggplot(diamonds, aes(x = carat, color = cut))+
+  geom_freqpoly(binwidth = 0.1)
+
+ggplot(diamonds, aes(x = y)) +
+  geom_histogram(bins = 500) +
+  coord_cartesian(xlim = c(1,5), ylim = c(0,70)) #zooming in on the chart
+
+ggplot(diamonds, aes(x = y)) +
+  geom_histogram(bins = 500) +
+  xlim(1,8) #considers data points only in the range
+
+#Missing Values - try not to filter the data out. If any value is unusual, then replace with NA or the right one (mean/max etc)
+```
+#Covariation
+## A Categorical and Continuous Variable
+```{r}
+#Categorical and continuous variable
+
+
+ggplot(diamonds, aes(x = price))+
+  geom_freqpoly(aes(color = cut)) #here since the total in each category is low, the difference might be misleading. use count() to see the difference
+
+#a better option would be to use density
+
+ggplot(diamonds, aes(x = price, y = ..density..))+
+  geom_freqpoly(aes(color = cut)) #here, each graph is scaled to a constant (1, i think)
+
+#another method is to use box plot
+
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_boxplot()
+
+#if we are interested to see how price would increase with cut, then we can reorder the x to increasing/decreasing 
+
+ggplot(diamonds, aes(x = reorder(cut, price, FUN = median), y = price)) +
+  geom_boxplot() #add a minus(-) infront of price for descending order
+
+#for horizontal boxplot, do a coord_flip
+ggplot(diamonds, aes(x = reorder(cut, price, FUN = median), y = price)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+## Two Categorical Variable
+```{r}
+
+#use geom_tile
+
+diamonds %>% count(color, cut) %>% #will give n and color and cut
+  ggplot(aes(x = cut, y = color))+
+  geom_tile(aes(fill = n))
+
+```
+# Two Continuous Variable
+
+```{r}
+#scatter plot is a good method
+
+ggplot(diamonds, aes(x = carat, y = price))+
+  geom_point() #lots of points densed up
+
+#you can use alpha to increase transparency
+ggplot(diamonds, aes(x = carat, y = price))+
+  geom_point(alpha = 1/10, size = .1)
+
+#another method is to bin a variable and present as boxplots
+ggplot(diamonds, aes(x = cut_width(carat, width = .1), y = price))+
+  geom_boxplot(varwidth = T) #to make width of boxplot proportional to the number of points in the bin
+
+#or use cut_number, which gives same number of points in each group
+
+ggplot(diamonds, aes(x = cut_number(carat, 10), y = price))+
+  geom_boxplot()
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

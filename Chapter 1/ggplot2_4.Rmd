@@ -1,5 +1,7 @@
 ---
 title: "Visualizations with ggplot2 - Part 4" 
+editor_options: 
+  chunk_output_type: console
 ---
 ```{r echo=TRUE}
 library(tidyverse)
@@ -12,6 +14,7 @@ ggplot(diamonds, mapping = aes(x = cut)) +
 
 ggplot(diamonds, mapping = aes(x = cut, y = ..prop.., group = 1)) + 
   geom_bar() ##default stat changed from "count" to "prop"
+#for some reason, fill/color and other aesthetics does not work when 'proportion' is used as y
 
 
 ggplot(mpg, aes(x = class, y = hwy,  fill = class)) +
@@ -39,7 +42,7 @@ ggplot(demo, mapping = aes(x = a, y = b)) +
   geom_bar(stat = "identity")
 
 ggplot(diamonds ) +
-  geom_bar(aes(x = cut, fill = clarity))
+  geom_bar(aes(x = cut, fill = clarity)) #here prop cannot be used as y
 
 ggplot(diamonds, aes(x = cut, y = depth)) +
   stat_summary(

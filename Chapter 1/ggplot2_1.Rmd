@@ -1,5 +1,7 @@
 ---
   title: "Visualization with ggplot, Part 1"
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -9,8 +11,12 @@ mpg
 
 ggplot(mpg, aes(x = displ, y = hwy)) +
   geom_point() +
-  labs(x = "Engine Displacement (L)", y = " Mileage per Gallon, Highway", 
-       title = "Mileage VS Engine Displacement", caption = "Random Stuffs for ggplot2", subtitle = "A Simple Good Graph")
+  labs(x = "X-Axis", 
+       y = "Y-Axis", 
+       title = "This is the title", 
+       caption = "This is caption", 
+       subtitle = "This is subtitle"
+       )
 
 ggplot(mpg, aes(x = cyl, y = hwy)) +
   geom_point()
@@ -39,7 +45,8 @@ ggplot(mpg, aes(x = displ, y = hwy)) +
   geom_point(mapping = aes(size = class))
 
 ggplot(mpg, aes(x = displ, y = hwy)) +
-  geom_point(shape = 21, fill = "red", stroke = 2)
+  geom_point(shape = 21,fill = "red", stroke = 2, show.legend = F)
+
 
 ggplot(mpg, aes(x = displ, y = hwy)) +
   geom_point(color = "green", size = 2)

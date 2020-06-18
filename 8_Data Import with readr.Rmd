@@ -8,7 +8,7 @@ editor_options:
 ```{r}
 library(tidyverse)
 #read_csv() - comma separated
-#read_csv2() - semicolon seperated
+#read_csv2() - semicolon separated
 #read_tsv() - tab delimited
 #read_demin() - any delimiter
 
@@ -107,7 +107,7 @@ guess_encoding(charToRaw(x2))
 
 ```{r}
 fruit <- c("apple", "banana")
-parse_factor(c("apple", "banana", "bananana"), levels = fruit)
+parse_factor(c("apple", "banana", "banana"), levels = fruit)
 ```
 
 ### Dates, Date-Times, and Times
@@ -143,6 +143,59 @@ parse_datetime("01/02/1992T09:11:12", locale = ind_locale)
 ### Parsing a file
 
 ```{r}
+
+```
+
+##Parsing a file
+
+```{r}
+#guess_parse() uses readr's default parser and return the guess
+#parse_guess() uses the best guess to parse the vector
+
+challenge <- read_csv(readr_example("challenge.csv"))
+
+problems(challenge)
+view(challenge)
+
+challenge <- read_csv(readr_example("challenge.csv"),
+                      col_types = cols(
+                        x = col_double(),
+                        y = col_character()
+                      ))
+tail(challenge) #the last y are all dates
+
+challenge <- read_csv(readr_example("challenge.csv"),
+                      col_types = cols(
+                        x = col_double(),
+                        y = col_date()
+                      ))
+#we can add guess_max = nrow(challenge) to use the whole dataset
+
+challenge <- read_csv(readr_example("challenge.csv"), 
+                      guess_max = 1500)
+
+df <- tribble(
+  ~x, ~y,
+  "1","2.1",
+  "2","3.1",
+  "3","5.5"
+)
+
+type_convert(df)
+
+```
+## Writing to a File
+
+```{r}
+write_csv(challenge,"challenge.csv") #here the data on type is lost
+#reading back will be the same challenge
+#here we can use rds
+
+write_rds(challenge, "challenge.rds")
+read_rds("challenge.rds")
+
+
+
 
 ```
 

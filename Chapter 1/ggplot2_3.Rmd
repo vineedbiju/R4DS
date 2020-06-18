@@ -2,7 +2,7 @@
 title: "Visualizations with ggplot2 - Part 3"
 output: html_notebook
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ## Statistical Transformations

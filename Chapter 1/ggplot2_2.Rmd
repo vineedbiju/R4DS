@@ -1,5 +1,7 @@
 ---
 title: "Visualization with ggplot, Part 2 - Duplicate of Part 1"
+editor_options: 
+  chunk_output_type: console
 ---
 ```{r}
 library(tidyverse)
